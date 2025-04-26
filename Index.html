@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Flow</title>
+    <style>
+        :root {
+            --primary: #4a6fa5;
+            --secondary: #166088;
+            --accent: #4fc3f7;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --spiritual: #6f42c1;
+            --awareness: #17a2b8;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: #f5f7fa; color: var(--dark); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        header { background: var(--primary); color: white; padding: 1rem 0; position: sticky; top: 0; z-index: 100; }
+        .header-container { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.8rem; font-weight: bold; }
+        .navbar { display: flex; }
+        .nav-btn { background: var(--secondary); color: white; border: none; padding: 0.6rem 1.2rem; margin-left: 1rem; border-radius: 8px; cursor: pointer; }
+        .main-content { padding: 2rem 0; }
+        
+        /* Toggle Areas */
+        .toggle-area { 
+            display: none;
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .toggle-area.active { display: block; }
+        
+        /* Activity Section */
+        .activity-form { display: flex; margin-bottom: 1.5rem; }
+        .activity-input { flex: 1; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px 0 0 8px; font-size: 1rem; }
+        .add-btn { padding: 0 1.5rem; background: var(--success); color: white; border: none; border-radius: 0 8px 8px 0; cursor: pointer; font-size: 1rem; }
+        .activity-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem; border-bottom: 1px solid #eee; }
+        .activity-info { display: flex; align-items: center; flex: 1; }
+        .activity-checkbox { margin-right: 1rem; width: 20px; height: 20px; cursor: pointer; }
+        .activity-name { flex: 1; font-size: 1rem; }
+        .activity-name.completed { text-decoration: line-through; color: #999; }
+        .activity-actions { display: flex; }
+        .action-btn { background: none; border: none; cursor: pointer; margin-left: 0.5rem; font-size: 1rem; color: #666; }
+        .edit-btn:hover { color: var(--warning); }
+        .delete-btn:hover { color: var(--danger); }
+        
+        /* Stats Section */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+        .stat-card { background: #f8f9fa; border-radius: 8px; padding: 1rem; text-align: center; }
+        .stat-value { font-size: 2rem; font-weight: bold; color: var(--primary); margin-bottom: 0.5rem; }
+        .stat-label { color: #666; font-size: 0.9rem; }
+        .progress-bar { height: 10px; background: #e9ecef; border-radius: 5px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--success); border-radius: 5px; }
+        
+        /* Todo List Section */
+        .todo-form { display: flex; margin-bottom: 1.5rem; }
+        .todo-input { flex: 1; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
+        
+        /* Awareness Section */
+        .awareness-card { background: var(--awareness); color: white; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
+        
+        /* Spiritual Section */
+        .spiritual-card { background: var(--spiritual); color: white; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
+        .spiritual-content { margin-top: 1rem; }
+        .add-spiritual-btn { background: white; color: var(--spiritual); border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; margin-top: 1rem; }
+        
+        /* Home/Auth Section */
+        .auth-container { max-width: 400px; margin: 0 auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .auth-form { display: flex; flex-direction: column; }
+        .auth-input { padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 1rem; font-size: 1rem; }
+        .auth-btn { background: var(--primary); color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-size: 1rem; }
+        .google-btn { background: #db4437; color: white; border: none; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-size: 1rem; margin-top: 1rem; display: flex; align-items: center; justify-content: center; }
+        .google-icon { margin-right: 8px; }
+        
+        /* Notification */
+        .notification { position: fixed; bottom: 20px; right: 20px; background: var(--success); color: white; padding: 1rem; border-radius: 8px; display: none; z-index: 1100; }
+        
+        /* Locked State */
+        .locked-message { text-align: center; padding: 2rem; background: #f8f9fa; border-radius: 8px; }
+
+        /* New Styles for Spiritual Section */
+        .spiritual-section {
+            margin: 2rem 0;
+            padding: 1rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            position: relative;
+        }
+        .spiritual-section-title {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: white;
+            border-bottom: 2px solid white;
+            padding-bottom: 0.5rem;
+        }
+        .spiritual-carousel {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            gap: 1rem;
+            padding: 1rem 0;
+            scroll-behavior: smooth;
+        }
+        .spiritual-carousel::-webkit-scrollbar {
+            display: none;
+        }
+        .spiritual-item {
+            scroll-snap-align: start;
+            min-width: 80%;
+            position: relative;
+        }
+        .spiritual-item img {
+            width: 100%;
+            border-radius: 8px;
+            height: 200px;
+            object-fit: cover;
+        }
+        .spiritual-item video {
+            width: 100%;
+            border-radius: 8px;
+        }
+        .spiritual-item blockquote {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            font-style: italic;
+        }
+        .delete-spiritual {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .section-divider {
+            height: 3px;
+            background: linear-gradient(90deg, transparent, white, transparent);
+            margin: 2rem 0;
+            border-radius: 50%;
+            position: relative;
+        }
+        .section-divider::before, .section-divider::after {
+            content: '';
+            position: absolute;
+            height: 3px;
+            width: 100%;
+            background: inherit;
+            top: 8px;
+            left: 0;
+        }
+        .section-divider::after {
+            top: 16px;
+        }
+        @keyframes slideLeft {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+        @keyframes slideRight {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(0); }
+        }
+        .auto-move-left {
+            animation: slideLeft 30s linear infinite;
+        }
+        .auto-move-right {
+            animation: slideRight 30s linear infinite;
+        }
+
+        /* New styles for save button and result tracking */
+        .save-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            margin-left: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .result-tracking-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 1rem;
+            font-size: 1rem;
+            display: block;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <div class="logo">Mind Flow</div>
+            <nav class="navbar" id="mainNav">
+                <button class="nav-btn" id="homeBtn">Home</button>
+                <!-- These will be shown only when logged in -->
+                <button class="nav-btn" id="activityBtn" style="display:none">Activities</button>
+                <button class="nav-btn" id="todoBtn" style="display:none">Todo List</button>
+                <button class="nav-btn" id="awarenessBtn" style="display:none">Awareness</button>
+                <button class="nav-btn" id="spiritualBtn" style="display:none">Spiritual</button>
+                <button class="save-btn" id="saveBtn" style="display:none">Save All</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <!-- Home/Auth Toggle Area (always visible) -->
+            <div class="toggle-area active" id="homeArea">
+                <div class="auth-container">
+                    <h2>Welcome to Mind Flow</h2>
+                    <p>Connect your Google account to unlock all features</p>
+                    <form class="auth-form" id="authForm">
+                        <input type="email" class="auth-input" placeholder="Email" id="authEmail" required>
+                        <input type="password" class="auth-input" placeholder="Password" id="authPassword" required>
+                        <button type="submit" class="auth-btn">Sign In</button>
+                        <button type="button" class="google-btn" id="googleSignIn">
+                            <span class="google-icon">G</span>
+                            Sign in with Google
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Activity Management Toggle Area -->
+            <div class="toggle-area" id="activityArea">
+                <h2>Activity Management</h2>
+                <form class="activity-form" id="activityForm">
+                    <input type="text" class="activity-input" id="activityInput" placeholder="Add a new activity..." required>
+                    <button type="submit" class="add-btn">Add</button>
+                </form>
+                <ul class="activity-list" id="activityList"></ul>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalActivities">0</div>
+                        <div class="stat-label">Total Activities</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="completedActivities">0</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-header">
+                        <span>Success Rate</span>
+                        <span class="progress-percent" id="successRate">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+                    </div>
+                </div>
+                <button class="result-tracking-btn" id="resultTrackingBtn">View Result Tracking</button>
+            </div>
+            
+            <!-- Todo List Toggle Area -->
+            <div class="toggle-area" id="todoArea">
+                <h2>Todo List</h2>
+                <form class="todo-form" id="todoForm">
+                    <input type="text" class="todo-input" id="todoInput" placeholder="Add a new task..." required>
+                    <button type="submit" class="add-btn">Add</button>
+                </form>
+                <ul class="todo-list" id="todoList"></ul>
+            </div>
+            
+            <!-- Awareness Toggle Area (updated) -->
+            <div class="toggle-area" id="awarenessArea">
+                <h2>Awareness & Progress Tracking</h2>
+                <div class="awareness-card">
+                    <h3>Daily Reflection</h3>
+                    <p>Track your mood, thoughts, and progress here</p>
+                    <textarea class="awareness-input" id="awarenessInput" placeholder="How are you feeling today?" rows="4" style="width:100%; margin-top:1rem;"></textarea>
+                    <button class="add-btn" id="saveAwareness" style="margin-top:1rem;">Save Reflection</button>
+                </div>
+                
+                <div class="stats-grid" style="margin-top: 2rem;">
+                    <div class="stat-card">
+                        <h3>Accomplished Tasks</h3>
+                        <ul id="completedTasksList" style="text-align: left; margin-top: 1rem;"></ul>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Pending Tasks</h3>
+                        <ul id="pendingTasksList" style="text-align: left; margin-top: 1rem;"></ul>
+                    </div>
+                </div>
+                
+                <div id="awarenessEntries"></div>
+            </div>
+            
+            <!-- Spiritual Toggle Area (updated) -->
+            <div class="toggle-area" id="spiritualArea">
+                <h2>Spiritual Growth</h2>
+                <div class="spiritual-card">
+                    <h3>Biblical Content</h3>
+                    <p>Add scriptures, videos, or images for spiritual growth</p>
+                    
+                    <div class="spiritual-content" id="spiritualContent">
+                        <div class="spiritual-section">
+                            <h4 class="spiritual-section-title">Scriptures</h4>
+                            <div class="spiritual-carousel" id="scriptureCarousel"></div>
+                        </div>
+                        
+                        <div class="section-divider"></div>
+                        
+                        <div class="spiritual-section">
+                            <h4 class="spiritual-section-title">Images</h4>
+                            <div class="spiritual-carousel auto-move-left" id="imageCarousel"></div>
+                        </div>
+                        
+                        <div class="section-divider"></div>
+                        
+                        <div class="spiritual-section">
+                            <h4 class="spiritual-section-title">Videos</h4>
+                            <div class="spiritual-carousel auto-move-right" id="videoCarousel"></div>
+                        </div>
+                    </div>
+                    
+                    <input type="file" id="spiritualUpload" accept="image/*,video/*" style="display: none;">
+                    <button class="add-spiritual-btn" id="addSpiritualBtn">+ Add Content</button>
+                </div>
+            </div>
+            
+            <!-- Locked Message (shown in all areas when not logged in) -->
+            <div class="locked-message" id="lockedMessage" style="display:none;">
+                <h3>Please connect your Google account to unlock this feature</h3>
+                <p>Sign in to access all areas of Mind Flow</p>
+                <button class="auth-btn" id="goToAuth">Go to Sign In</button>
+            </div>
+        </div>
+    </main>
+
+    <div class="notification" id="notification">Notification</div>
+
+    <script>
+        // DOM Elements
+        const homeBtn = document.getElementById('homeBtn');
+        const activityBtn = document.getElementById('activityBtn');
+        const todoBtn = document.getElementById('todoBtn');
+        const awarenessBtn = document.getElementById('awarenessBtn');
+        const spiritualBtn = document.getElementById('spiritualBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const resultTrackingBtn = document.getElementById('resultTrackingBtn');
+        
+        const homeArea = document.getElementById('homeArea');
+        const activityArea = document.getElementById('activityArea');
+        const todoArea = document.getElementById('todoArea');
+        const awarenessArea = document.getElementById('awarenessArea');
+        const spiritualArea = document.getElementById('spiritualArea');
+        const lockedMessage = document.getElementById('lockedMessage');
+        const goToAuth = document.getElementById('goToAuth');
+        
+        const activityForm = document.getElementById('activityForm');
+        const activityInput = document.getElementById('activityInput');
+        const activityList = document.getElementById('activityList');
+        
+        const todoForm = document.getElementById('todoForm');
+        const todoInput = document.getElementById('todoInput');
+        const todoList = document.getElementById('todoList');
+        
+        const saveAwareness = document.getElementById('saveAwareness');
+        const awarenessInput = document.getElementById('awarenessInput');
+        const awarenessEntries = document.getElementById('awarenessEntries');
+        const completedTasksList = document.getElementById('completedTasksList');
+        const pendingTasksList = document.getElementById('pendingTasksList');
+        
+        const addSpiritualBtn = document.getElementById('addSpiritualBtn');
+        const spiritualContent = document.getElementById('spiritualContent');
+        const spiritualUpload = document.getElementById('spiritualUpload');
+        const scriptureCarousel = document.getElementById('scriptureCarousel');
+        const imageCarousel = document.getElementById('imageCarousel');
+        const videoCarousel = document.getElementById('videoCarousel');
+        
+        const authForm = document.getElementById('authForm');
+        const googleSignIn = document.getElementById('googleSignIn');
+        const notification = document.getElementById('notification');
+        
+        // State
+        let isLoggedIn = false;
+        let activities = JSON.parse(localStorage.getItem('activities')) || [];
+        let todos = JSON.parse(localStorage.getItem('todos')) || [];
+        let awarenessPosts = JSON.parse(localStorage.getItem('awarenessPosts')) || [];
+        let spiritualPosts = JSON.parse(localStorage.getItem('spiritualPosts')) || [];
+
+        // Initialize the app
+        function init() {
+            // Check if user is "logged in" (for demo purposes)
+            const storedUser = localStorage.getItem('mindFlowUser');
+            if (storedUser) {
+                isLoggedIn = true;
+                updateUIForLoggedIn();
+            }
+            
+            // Load data
+            renderActivities();
+            renderTodos();
+            renderAwarenessPosts();
+            renderSpiritualPosts();
+            updateStats();
+            updateAwarenessTasks();
+            
+            // Set up event listeners
+            setupEventListeners();
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Navigation buttons
+            homeBtn.addEventListener('click', () => showArea('home'));
+            activityBtn.addEventListener('click', () => {
+                showArea('activity');
+                updateAwarenessTasks();
+            });
+            todoBtn.addEventListener('click', () => {
+                showArea('todo');
+                updateAwarenessTasks();
+            });
+            awarenessBtn.addEventListener('click', () => {
+                showArea('awareness');
+                updateAwarenessTasks();
+            });
+            spiritualBtn.addEventListener('click', () => showArea('spiritual'));
+            goToAuth.addEventListener('click', () => showArea('home'));
+            
+            // Save button
+            saveBtn.addEventListener('click', saveAllData);
+            
+            // Result tracking button
+            resultTrackingBtn.addEventListener('click', () => {
+                showNotification('Result tracking feature will be implemented soon!');
+            });
+            
+            // Forms
+            activityForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                addActivity();
+                updateAwarenessTasks();
+            });
+            
+            todoForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                addTodo();
+                updateAwarenessTasks();
+            });
+            
+            saveAwareness.addEventListener('click', addAwarenessPost);
+            
+            // Spiritual content upload
+            addSpiritualBtn.addEventListener('click', function() {
+                spiritualUpload.click();
+            });
+            
+            spiritualUpload.addEventListener('change', handleSpiritualUpload);
+            
+            // Auth
+            authForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                handleSignIn();
+            });
+            
+            googleSignIn.addEventListener('click', function() {
+                handleGoogleSignIn();
+            });
+        }
+
+        // Show specific area
+        function showArea(area) {
+            // Hide all areas first
+            homeArea.classList.remove('active');
+            activityArea.classList.remove('active');
+            todoArea.classList.remove('active');
+            awarenessArea.classList.remove('active');
+            spiritualArea.classList.remove('active');
+            
+            // Show the selected area
+            if (area === 'home') {
+                homeArea.classList.add('active');
+                lockedMessage.style.display = 'none';
+            } else if (isLoggedIn) {
+                // Only show other areas if logged in
+                document.getElementById(`${area}Area`).classList.add('active');
+                lockedMessage.style.display = 'none';
+            } else {
+                // Show locked message if not logged in
+                lockedMessage.style.display = 'block';
+            }
+        }
+
+        // Auth Functions
+        function handleSignIn() {
+            // In a real app, this would validate with a server
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPassword').value;
+            
+            if (email && password) {
+                // For demo, we'll just consider this a successful login
+                localStorage.setItem('mindFlowUser', JSON.stringify({ email }));
+                isLoggedIn = true;
+                updateUIForLoggedIn();
+                showArea('activity');
+                showNotification('Successfully signed in!');
+            }
+        }
+
+        function handleGoogleSignIn() {
+            // In a real app, this would use Google OAuth
+            localStorage.setItem('mindFlowUser', JSON.stringify({ 
+                email: 'user@gmail.com', 
+                provider: 'google' 
+            }));
+            isLoggedIn = true;
+            updateUIForLoggedIn();
+            showArea('activity');
+            showNotification('Successfully signed in with Google!');
+        }
+
+        function updateUIForLoggedIn() {
+            // Show all nav buttons
+            activityBtn.style.display = 'block';
+            todoBtn.style.display = 'block';
+            awarenessBtn.style.display = 'block';
+            spiritualBtn.style.display = 'block';
+            saveBtn.style.display = 'block';
+            
+            // Hide the locked message
+            lockedMessage.style.display = 'none';
+        }
+
+        // Save all data function
+        function saveAllData() {
+            saveActivities();
+            saveTodos();
+            saveAwarenessPosts();
+            saveSpiritualPosts();
+            showNotification('All data saved successfully!');
+        }
+
+        // Activity Functions
+        function addActivity() {
+            const activityText = activityInput.value.trim();
+            if (activityText) {
+                const newActivity = {
+                    id: Date.now(),
+                    text: activityText,
+                    completed: false,
+                    createdAt: new Date().toISOString()
+                };
+                
+                activities.push(newActivity);
+                saveActivities();
+                renderActivities();
+                updateStats();
+                updateAwarenessTasks();
+                
+                activityInput.value = '';
+                showNotification('Activity added successfully!');
+            }
+        }
+
+        function renderActivities() {
+            if (activities.length === 0) {
+                activityList.innerHTML = '<li class="activity-item">No activities yet. Add one above!</li>';
+                return;
+            }
+            
+            activityList.innerHTML = activities.map(activity => `
+                <li class="activity-item" data-id="${activity.id}">
+                    <div class="activity-info">
+                        <input type="checkbox" class="activity-checkbox" ${activity.completed ? 'checked' : ''}>
+                        <span class="activity-name ${activity.completed ? 'completed' : ''}">${activity.text}</span>
+                    </div>
+                    <div class="activity-actions">
+                        <button class="action-btn edit-btn">✏️</button>
+                        <button class="action-btn delete-btn">🗑️</button>
+                    </div>
+                </li>
+            `).join('');
+            
+            // Add event listeners
+            document.querySelectorAll('.activity-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function(e) {
+                    const activityId = parseInt(e.target.closest('.activity-item').dataset.id);
+                    const activity = activities.find(a => a.id === activityId);
+                    if (activity) {
+                        activity.completed = e.target.checked;
+                        saveActivities();
+                        renderActivities();
+                        updateStats();
+                        updateAwarenessTasks();
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    const activityId = parseInt(e.target.closest('.activity-item').dataset.id);
+                    const activity = activities.find(a => a.id === activityId);
+                    if (activity) {
+                        const newText = prompt('Edit activity:', activity.text);
+                        if (newText !== null && newText.trim() !== '') {
+                            activity.text = newText.trim();
+                            saveActivities();
+                            renderActivities();
+                            updateAwarenessTasks();
+                        }
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    const activityId = parseInt(e.target.closest('.activity-item').dataset.id);
+                    const activity = activities.find(a => a.id === activityId);
+                    if (activity && confirm(`Delete "${activity.text}"?`)) {
+                        activities = activities.filter(a => a.id !== activityId);
+                        saveActivities();
+                        renderActivities();
+                        updateStats();
+                        updateAwarenessTasks();
+                    }
+                });
+            });
+        }
+
+        function saveActivities() {
+            localStorage.setItem('activities', JSON.stringify(activities));
+        }
+
+        function updateStats() {
+            const total = activities.length;
+            const completed = activities.filter(a => a.completed).length;
+            const successRate = total > 0 ? Math.round((completed / total) * 100) : 0;
+            
+            document.getElementById('totalActivities').textContent = total;
+            document.getElementById('completedActivities').textContent = completed;
+            document.getElementById('successRate').textContent = `${successRate}%`;
+            document.getElementById('progressFill').style.width = `${successRate}%`;
+        }
+
+        // Todo List Functions
+        function addTodo() {
+            const todoText = todoInput.value.trim();
+            if (todoText) {
+                const newTodo = {
+                    id: Date.now(),
+                    text: todoText,
+                    completed: false,
+                    createdAt: new Date().toISOString()
+                };
+                
+                todos.push(newTodo);
+                saveTodos();
+                renderTodos();
+                updateAwarenessTasks();
+                
+                todoInput.value = '';
+                showNotification('Todo added successfully!');
+            }
+        }
+
+        function renderTodos() {
+            if (todos.length === 0) {
+                todoList.innerHTML = '<li class="todo-item">No todos yet. Add one above!</li>';
+                return;
+            }
+            
+            todoList.innerHTML = todos.map(todo => `
+                <li class="activity-item" data-id="${todo.id}">
+                    <div class="activity-info">
+                        <input type="checkbox" class="activity-checkbox" ${todo.completed ? 'checked' : ''}>
+                        <span class="activity-name ${todo.completed ? 'completed' : ''}">${todo.text}</span>
+                    </div>
+                    <div class="activity-actions">
+                        <button class="action-btn edit-btn">✏️</button>
+                        <button class="action-btn delete-btn">🗑️</button>
+                    </div>
+                </li>
+            `).join('');
+            
+            // Add event listeners (similar to activities)
+            document.querySelectorAll('.todo-list .activity-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function(e) {
+                    const todoId = parseInt(e.target.closest('.activity-item').dataset.id);
+                    const todo = todos.find(t => t.id === todoId);
+                    if (todo) {
+                        todo.completed = e.target.checked;
+                        saveTodos();
+                        renderTodos();
+                        updateAwarenessTasks();
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.todo-list .edit-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    const todoId = parseInt(e.target.closest('.activity-item').dataset.id);
+                    const todo = todos.find(t => t.id === todoId);
+                    if (todo) {
+                        const newText = prompt('Edit todo:', todo.text);
+                        if (newText !== null && newText.trim() !== '') {
+                            todo.text = newText.trim();
+                            saveTodos();
+                            renderTodos();
+                            updateAwarenessTasks();
+                        }
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.todo-list .delete-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    const todoId = parseInt(e.target.closest('.activity-item').dataset.id);
+                    const todo = todos.find(t => t.id === todoId);
+                    if (todo && confirm(`Delete "${todo.text}"?`)) {
+                        todos = todos.filter(t => t.id !== todoId);
+                        saveTodos();
+                        renderTodos();
+                        updateAwarenessTasks();
+                    }
+                });
+            });
+        }
+
+        function saveTodos() {
+            localStorage.setItem('todos', JSON.stringify(todos));
+        }
+
+        // Awareness Functions
+        function addAwarenessPost() {
+            const postText = awarenessInput.value.trim();
+            if (postText) {
+                const newPost = {
+                    id: Date.now(),
+                    text: postText,
+                    date: new Date().toISOString()
+                };
+                
+                awarenessPosts.push(newPost);
+                saveAwarenessPosts();
+                renderAwarenessPosts();
+                
+                awarenessInput.value = '';
+                showNotification('Reflection saved!');
+            }
+        }
+
+        function renderAwarenessPosts() {
+            if (awarenessPosts.length === 0) {
+                awarenessEntries.innerHTML = '<p>No reflections yet.</p>';
+                return;
+            }
+            
+            awarenessEntries.innerHTML = awarenessPosts.map(post => `
+                <div class="awareness-card">
+                    <p>${post.text}</p>
+                    <small>${new Date(post.date).toLocaleString()}</small>
+                    <button class="action-btn delete-btn" data-id="${post.id}">🗑️</button>
+                </div>
+            `).join('');
+            
+            // Add delete event listeners
+            document.querySelectorAll('.awareness-card .delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const postId = parseInt(this.dataset.id);
+                    awarenessPosts = awarenessPosts.filter(p => p.id !== postId);
+                    saveAwarenessPosts();
+                    renderAwarenessPosts();
+                });
+            });
+        }
+
+        function updateAwarenessTasks() {
+            // Get completed tasks from both activities and todos
+            const completedActivities = activities.filter(a => a.completed);
+            const completedTodos = todos.filter(t => t.completed);
+            
+            // Get pending tasks from both activities and todos
+            const pendingActivities = activities.filter(a => !a.completed);
+            const pendingTodos = todos.filter(t => !t.completed);
+            
+            // Render completed tasks
+            completedTasksList.innerHTML = '';
+            
+            if (completedActivities.length === 0 && completedTodos.length === 0) {
+                completedTasksList.innerHTML = '<li>No completed tasks yet</li>';
+            } else {
+                completedActivities.forEach(activity => {
+                    const li = document.createElement('li');
+                    li.textContent = `✓ ${activity.text}`;
+                    completedTasksList.appendChild(li);
+                });
+                
+                completedTodos.forEach(todo => {
+                    const li = document.createElement('li');
+                    li.textContent = `✓ ${todo.text}`;
+                    completedTasksList.appendChild(li);
+                });
+            }
+            
+            // Render pending tasks
+            pendingTasksList.innerHTML = '';
+            
+            if (pendingActivities.length === 0 && pendingTodos.length === 0) {
+                pendingTasksList.innerHTML = '<li>No pending tasks</li>';
+            } else {
+                pendingActivities.forEach(activity => {
+                    const li = document.createElement('li');
+                    li.textContent = `◻ ${activity.text}`;
+                    pendingTasksList.appendChild(li);
+                });
+                
+                pendingTodos.forEach(todo => {
+                    const li = document.createElement('li');
+                    li.textContent = `◻ ${todo.text}`;
+                    pendingTasksList.appendChild(li);
+                });
+            }
+        }
+
+        function saveAwarenessPosts() {
+            localStorage.setItem('awarenessPosts', JSON.stringify(awarenessPosts));
+        }
+
+        // Spiritual Functions
+        function handleSpiritualUpload(e) {
+            const files = e.target.files;
+            if (files.length === 0) return;
+            
+            const file = files[0];
+            const fileType = file.type.split('/')[0]; // 'image' or 'video'
+            
+            if (fileType === 'image') {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const newPost = {
+                        id: Date.now(),
+                        type: 'image',
+                        content: event.target.result,
+                        date: new Date().toISOString()
+                    };
+                    
+                    spiritualPosts.push(newPost);
+                    saveSpiritualPosts();
+                    renderSpiritualPosts();
+                    showNotification('Image added!');
+                };
+                reader.readAsDataURL(file);
+            } else if (fileType === 'video') {
+                const videoUrl = URL.createObjectURL(file);
+                const newPost = {
+                    id: Date.now(),
+                    type: 'video',
+                    content: videoUrl,
+                    date: new Date().toISOString()
+                };
+                
+                spiritualPosts.push(newPost);
+                saveSpiritualPosts();
+                renderSpiritualPosts();
+                showNotification('Video added!');
+            } else {
+                // Handle scripture text
+                const scriptureText = prompt('Enter scripture text:');
+                if (scriptureText) {
+                    const newPost = {
+                        id: Date.now(),
+                        type: 'scripture',
+                        content: scriptureText,
+                        date: new Date().toISOString()
+                    };
+                    
+                    spiritualPosts.push(newPost);
+                    saveSpiritualPosts();
+                    renderSpiritualPosts();
+                    showNotification('Scripture added!');
+                }
+            }
+            
+            // Reset file input
+            e.target.value = '';
+        }
+
+        function renderSpiritualPosts() {
+            scriptureCarousel.innerHTML = '';
+            imageCarousel.innerHTML = '';
+            videoCarousel.innerHTML = '';
+            
+            if (spiritualPosts.length === 0) {
+                scriptureCarousel.innerHTML = '<p>No content yet. Add some above!</p>';
+                return;
+            }
+            
+            spiritualPosts.forEach(post => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'spiritual-item';
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-spiritual';
+                deleteBtn.innerHTML = '×';
+                deleteBtn.addEventListener('click', () => {
+                    spiritualPosts = spiritualPosts.filter(p => p.id !== post.id);
+                    saveSpiritualPosts();
+                    renderSpiritualPosts();
+                });
+                
+                if (post.type === 'scripture') {
+                    itemDiv.innerHTML = `
+                        <blockquote>${post.content}</blockquote>
+                        <small>${new Date(post.date).toLocaleString()}</small>
+                    `;
+                    itemDiv.appendChild(deleteBtn);
+                    scriptureCarousel.appendChild(itemDiv);
+                } else if (post.type === 'image') {
+                    itemDiv.innerHTML = `
+                        <img src="${post.content}" alt="Spiritual image">
+                        <small>${new Date(post.date).toLocaleString()}</small>
+                    `;
+                    itemDiv.appendChild(deleteBtn);
+                    imageCarousel.appendChild(itemDiv);
+                } else if (post.type === 'video') {
+                    itemDiv.innerHTML = `
+                        <video controls>
+                            <source src="${post.content}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <small>${new Date(post.date).toLocaleString()}</small>
+                    `;
+                    itemDiv.appendChild(deleteBtn);
+                    videoCarousel.appendChild(itemDiv);
+                }
+            });
+        }
+
+        function saveSpiritualPosts() {
+            localStorage.setItem('spiritualPosts', JSON.stringify(spiritualPosts));
+        }
+
+        // Helper Functions
+        function showNotification(message) {
+            notification.textContent = message;
+            notification.style.display = 'block';
+            setTimeout(() => notification.style.display = 'none', 3000);
+        }
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
